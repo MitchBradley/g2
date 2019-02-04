@@ -27,6 +27,20 @@
 ##########
 # V9-based configs:
 
+ifeq ("$(CONFIG)","wmb")
+    ifeq ("$(BOARD)","NONE")
+        BOARD=gShield-wmb
+    endif
+    SETTINGS_FILE="settings_gShield_Taig_homing.h"
+endif
+
+ifeq ("$(CONFIG)","wmb-hybrid")
+    ifeq ("$(BOARD)","NONE")
+        BOARD=gShield-wmb-DuePort
+    endif
+    SETTINGS_FILE="settings_gShield_Taig_hybrid.h"
+endif
+
 ifeq ("$(CONFIG)","ShapeokoDualY")
     ifeq ("$(BOARD)","NONE")
         BOARD=g2v9k
