@@ -529,7 +529,7 @@ static uint8_t _io(const index_t index)
         if (isdigit(*ptr)) { 
             return (atoi(ptr)-1);   // need to reduce by 1 for internal 0-based arrays
         }
-    } while (++ptr != NUL);
+    } while (++ptr != NULL);
 
     return (0);
 }

@@ -181,7 +181,7 @@ void _init_planner_queue(mpPlanner_t *_mp, mpBuf_t *queue, uint8_t size)
 void planner_init(mpPlanner_t *_mp, mpPlannerRuntime_t *_mr, mpBuf_t *queue, uint8_t queue_size)
 {
     // init planner master structure
-    memset(_mp, 0, sizeof(mpPlanner_t));    // clear all values, pointers and status    
+    _mp = {};    // clear all values, pointers and status
     _mp->magic_start = MAGICNUM;            // set boundary condition assertions
     _mp->magic_end = MAGICNUM;
     _mp->mfo_factor = 1.00;

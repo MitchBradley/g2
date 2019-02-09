@@ -28,7 +28,7 @@
 
 static stat_t _compute_arc(const bool radius_f);
 static void _compute_arc_offsets_from_radius(void);
-static float _estimate_arc_time (float arc_time);
+static float _estimate_arc_time (void);
 static stat_t _test_arc_soft_limits(void);
 
 /*****************************************************************************
@@ -342,8 +342,7 @@ static stat_t _compute_arc(const bool radius_f)
 
     // Find the minimum number of segments that meet accuracy and time constraints...
     // Note: removed segment_length test as segment_time accounts for this (build 083.37)
-    float arc_time;
-    float segments_for_minimum_time = _estimate_arc_time(arc_time) * (MICROSECONDS_PER_MINUTE / MIN_ARC_SEGMENT_USEC);
+    float segments_for_minimum_time = _estimate_arc_time() * (MICROSECONDS_PER_MINUTE / MIN_ARC_SEGMENT_USEC);
     float segments_for_chordal_accuracy = cm->arc.length / sqrt(4*cm->chordal_tolerance * (2 * cm->arc.radius - cm->chordal_tolerance));
     cm->arc.segments = floor(min(segments_for_chordal_accuracy, segments_for_minimum_time));
     cm->arc.segments = max(cm->arc.segments, (float)1.0);        //...but is at least 1 segment
@@ -487,8 +486,9 @@ static void _compute_arc_offsets_from_radius()
  *  where the unit vector is 1 in that dimension. This is not true for any arbitrary arc,
  *  with the result that the time returned may be less than optimal.
  */
-static float _estimate_arc_time (float arc_time)
+static float _estimate_arc_time ()
 {
+    float arc_time;
     // Determine move time at requested feed rate
     if (cm->arc.gm.feed_rate_mode == INVERSE_TIME_MODE) {
         arc_time = cm->arc.gm.feed_rate;    // inverse feed rate has been normalized to minutes

@@ -547,7 +547,7 @@ stat_t qr_queue_report_callback()         // called by controller dispatcher
 
     qr.queue_report_requested = false;
 
-    char report[32];    // we know these reports can't be longer than 30 bytes
+    char report[34];    // we know these reports can't be longer than 30 bytes, but we allocate a little extra to placate the fussy compiler
 
     if (cs.comm_mode == TEXT_MODE) {
         if (qr.queue_report_verbosity == QR_SINGLE) {
