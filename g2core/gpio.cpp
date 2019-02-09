@@ -523,13 +523,13 @@ stat_t gpio_set_output(uint8_t output_num, float value) {
 
 static uint8_t _io(const index_t index)
 {
-    const char *ptr = cfgArray[index].token; 
-    
-    do {
-        if (isdigit(*ptr)) { 
+    const char *ptr;
+
+    for (ptr = cfgArray[index].token; *ptr; ptr++) {
+        if (isdigit(*ptr)) {
             return (atoi(ptr)-1);   // need to reduce by 1 for internal 0-based arrays
         }
-    } while (++ptr != NULL);
+    }
 
     return (0);
 }
