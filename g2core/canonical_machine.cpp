@@ -1345,6 +1345,7 @@ stat_t cm_straight_feed(const float *target, const bool *flags, const uint8_t mo
 static void _exec_select_tool(float *value, bool *flag)
 {
     cm->gm.tool_select = (uint8_t)value[0];
+    cm->gm.tool = cm->gm.tool_select;
 }
 
 stat_t cm_select_tool(const uint8_t tool_select)
@@ -1359,13 +1360,13 @@ stat_t cm_select_tool(const uint8_t tool_select)
 
 static void _exec_change_tool(float *value, bool *flag)
 {
-    cm->gm.tool = (uint8_t)value[0];
+    // cm->gm.tool = (uint8_t)value[0];
     // TODO - change tool offsets and update display offsets
 }
 
 stat_t cm_change_tool(const uint8_t tool_change)
 {
-    float value[] = { (float)cm->gm.tool_select };
+    float value[] = { (float)0 };
     mp_queue_command(_exec_change_tool, value, nullptr);
     return (STAT_OK);
 }
