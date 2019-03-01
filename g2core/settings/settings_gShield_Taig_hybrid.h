@@ -60,11 +60,6 @@
 
 // *** Machine configuration settings *** //
 
-#ifndef USB_SERIAL_PORTS_EXPOSED
-#define USB_SERIAL_PORTS_EXPOSED   1        // Valid options are 1 or 2, only!
-#endif
-
-
 #ifndef JUNCTION_INTEGRATION_TIME
 #define JUNCTION_INTEGRATION_TIME   0.75    // {jt: cornering - between 0.05 and 2.00 (max)
 #endif
@@ -88,6 +83,10 @@
 #define SAFETY_INTERLOCK_ENABLE     1       // {saf: 0=off, 1=on
 #endif
 
+#ifndef SPINDLE_MODE
+#define SPINDLE_MODE                1       // {spmo; 0=diabled, 1=plan to stop, 2=continuous
+#endif
+
 #ifndef SPINDLE_ENABLE_POLARITY
 #define SPINDLE_ENABLE_POLARITY     SPINDLE_ACTIVE_HIGH  // {spep: 0=active low, 1=active high
 #endif
@@ -100,8 +99,20 @@
 #define SPINDLE_PAUSE_ON_HOLD       true    // {spph:
 #endif
 
-#ifndef SPINDLE_DWELL_TIME
-#define SPINDLE_DWELL_TIME          1.0     // {spdw:
+#ifndef SPINDLE_SPINUP_DELAY
+#define SPINDLE_SPINUP_DELAY          2     // {spde:
+#endif
+
+#ifndef SPINDLE_DWELL_MAX
+#define SPINDLE_DWELL_MAX    10000000.0     // maximum allowable dwell time. May be overridden in settings files
+#endif
+
+#ifndef SPINDLE_SPEED_MIN
+#define SPINDLE_SPEED_MIN           0.0     // {spsn:
+#endif
+
+#ifndef SPINDLE_SPEED_MAX
+#define SPINDLE_SPEED_MAX       10000.0     // {spsm:
 #endif
 
 #ifndef COOLANT_MIST_POLARITY
@@ -116,15 +127,14 @@
 #define COOLANT_PAUSE_ON_HOLD       true    // {coph:
 #endif
 
+#ifndef FEEDHOLD_Z_LIFT
+#define FEEDHOLD_Z_LIFT             0       // {zl: mm to lift Z on feedhold
+#endif
+
 #ifndef PROBE_REPORT_ENABLE
 #define PROBE_REPORT_ENABLE         true    // {prbr:
 #endif
 
-/*
- * The following is to fix an issue where feedrate override was being defined in some users
- * settings files but not others. This would otherwise cause an undefined compile error.
- *
-*/
 #ifndef MANUAL_FEEDRATE_OVERRIDE_ENABLE
 #define MANUAL_FEEDRATE_OVERRIDE_ENABLE false
 #endif
@@ -135,16 +145,20 @@
 
 // *** Communications and Reporting Settings *** //
 
-#ifndef TEXT_VERBOSITY
-#define TEXT_VERBOSITY              TV_VERBOSE              // {tv: TV_SILENT, TV_VERBOSE
+#ifndef USB_SERIAL_PORTS_EXPOSED
+#define USB_SERIAL_PORTS_EXPOSED   1                        // Valid options are 1 or 2, only!
+#endif
+
+#ifndef XIO_ENABLE_FLOW_CONTROL
+#define XIO_ENABLE_FLOW_CONTROL     FLOW_CONTROL_RTS        // {ex: FLOW_CONTROL_OFF, FLOW_CONTROL_XON, FLOW_CONTROL_RTS
 #endif
 
 #ifndef COMM_MODE
 #define COMM_MODE                   JSON_MODE               // {ej: TEXT_MODE, JSON_MODE
 #endif
 
-#ifndef XIO_ENABLE_FLOW_CONTROL
-#define XIO_ENABLE_FLOW_CONTROL     FLOW_CONTROL_RTS        // FLOW_CONTROL_OFF, FLOW_CONTROL_XON, FLOW_CONTROL_RTS
+#ifndef TEXT_VERBOSITY
+#define TEXT_VERBOSITY              TV_VERBOSE              // {tv: TV_SILENT, TV_VERBOSE
 #endif
 
 #ifndef XIO_UART_MUTES_WHEN_USB_CONNECTED
@@ -176,7 +190,6 @@
 // Alternate SRs that report in drawable units
 //#define STATUS_REPORT_DEFAULTS "line","vel","mpox","mpoy","mpoz","mpoa","coor","ofsa","ofsx","ofsy","ofsz","dist","unit","stat","homz","homy","homx","momo"
 #endif
-
 
 #ifndef MARLIN_COMPAT_ENABLED
 #define MARLIN_COMPAT_ENABLED       false                   // boolean, either true or false
@@ -228,6 +241,12 @@
 #ifndef M1_POLARITY
 #define M1_POLARITY                 0                       // {1po:  0=normal direction, 1=inverted direction
 #endif
+#ifndef M1_ENABLE_POLARITY
+#define M1_ENABLE_POLARITY          IO_ACTIVE_LOW           // {1ep:  IO_ACTIVE_LOW or IO_ACTIVE_HIGH
+#endif
+#ifndef M1_STEP_POLARITY
+#define M1_STEP_POLARITY            IO_ACTIVE_HIGH          // {1ps:  IO_ACTIVE_LOW or IO_ACTIVE_HIGH
+#endif
 #ifndef M1_POWER_MODE
 #define M1_POWER_MODE               MOTOR_ALWAYS_POWERED    // {1pm:  MOTOR_DISABLED, MOTOR_ALWAYS_POWERED, MOTOR_POWERED_IN_CYCLE, MOTOR_POWERED_ONLY_WHEN_MOVING
 #endif
@@ -253,6 +272,12 @@
 #endif
 #ifndef M2_POLARITY
 #define M2_POLARITY                 0
+#endif
+#ifndef M2_ENABLE_POLARITY
+#define M2_ENABLE_POLARITY          IO_ACTIVE_LOW
+#endif
+#ifndef M2_STEP_POLARITY
+#define M2_STEP_POLARITY            IO_ACTIVE_HIGH
 #endif
 #ifndef M2_POWER_MODE
 #define M2_POWER_MODE               MOTOR_ALWAYS_POWERED
@@ -280,6 +305,12 @@
 #ifndef M3_POLARITY
 #define M3_POLARITY                 1
 #endif
+#ifndef M3_ENABLE_POLARITY
+#define M3_ENABLE_POLARITY          IO_ACTIVE_LOW
+#endif
+#ifndef M3_STEP_POLARITY
+#define M3_STEP_POLARITY            IO_ACTIVE_HIGH
+#endif
 #ifndef M3_POWER_MODE
 #define M3_POWER_MODE               MOTOR_ALWAYS_POWERED
 #endif
@@ -305,6 +336,12 @@
 #endif
 #ifndef M4_POLARITY
 #define M4_POLARITY                 0
+#endif
+#ifndef M4_ENABLE_POLARITY
+#define M4_ENABLE_POLARITY          IO_ACTIVE_LOW
+#endif
+#ifndef M4_STEP_POLARITY
+#define M4_STEP_POLARITY            IO_ACTIVE_HIGH
 #endif
 #ifndef M4_POWER_MODE
 #define M4_POWER_MODE               MOTOR_ALWAYS_POWERED
@@ -332,6 +369,12 @@
 #ifndef M5_POLARITY
 #define M5_POLARITY                 0
 #endif
+#ifndef M5_ENABLE_POLARITY
+#define M5_ENABLE_POLARITY          IO_ACTIVE_LOW
+#endif
+#ifndef M5_STEP_POLARITY
+#define M5_STEP_POLARITY            IO_ACTIVE_HIGH
+#endif
 #ifndef M5_POWER_MODE
 #define M5_POWER_MODE               MOTOR_ALWAYS_POWERED
 #endif
@@ -357,6 +400,12 @@
 #endif
 #ifndef M6_POLARITY
 #define M6_POLARITY                 0
+#endif
+#ifndef M6_ENABLE_POLARITY
+#define M6_ENABLE_POLARITY          IO_ACTIVE_LOW
+#endif
+#ifndef M6_STEP_POLARITY
+#define M6_STEP_POLARITY            IO_ACTIVE_HIGH
 #endif
 #ifndef M6_POWER_MODE
 #define M6_POWER_MODE               MOTOR_DISABLED
@@ -492,6 +541,129 @@
 #define Z_ZERO_BACKOFF              2.0
 #endif
 
+// U AXIS
+#ifndef U_AXIS_MODE
+#define U_AXIS_MODE                 AXIS_DISABLED           // {xam:  see canonical_machine.h cmAxisMode for valid values
+#endif
+#ifndef U_VELOCITY_MAX
+#define U_VELOCITY_MAX              1000.0                  // {xvm:  G0 max velocity in mm/min
+#endif
+#ifndef U_FEEDRATE_MAX
+#define U_FEEDRATE_MAX              1000.0                  // {xfr:  G1 max feed rate in mm/min
+#endif
+#ifndef U_TRAVEL_MIN
+#define U_TRAVEL_MIN                0.0                     // {xtn:  minimum travel for soft limits
+#endif
+#ifndef U_TRAVEL_MAX
+#define U_TRAVEL_MAX                0.0                     // {xtm:  travel between switches or crashes
+#endif
+#ifndef U_JERK_MAX
+#define U_JERK_MAX                  1000.0                  // {xjm:
+#endif
+#ifndef U_JERK_HIGH_SPEED
+#define U_JERK_HIGH_SPEED           1000.0                  // {xjh:
+#endif
+#ifndef U_HOMING_INPUT
+#define U_HOMING_INPUT              0                       // {xhi:  input used for homing or 0 to disable
+#endif
+#ifndef U_HOMING_DIRECTION
+#define U_HOMING_DIRECTION          0                       // {xhd:  0=search moves negative, 1= search moves positive
+#endif
+#ifndef U_SEARCH_VELOCITY
+#define U_SEARCH_VELOCITY           500.0                   // {xsv:  minus means move to minimum switch
+#endif
+#ifndef U_LATCH_VELOCITY
+#define U_LATCH_VELOCITY            100.0                   // {xlv:  mm/min
+#endif
+#ifndef U_LATCH_BACKOFF
+#define U_LATCH_BACKOFF             4.0                     // {xlb:  mm
+#endif
+#ifndef U_ZERO_BACKOFF
+#define U_ZERO_BACKOFF              2.0                     // {xzb:  mm
+#endif
+
+// V AXIS
+#ifndef V_AXIS_MODE
+#define V_AXIS_MODE                 AXIS_DISABLED
+#endif
+#ifndef V_VELOCITY_MAX
+#define V_VELOCITY_MAX              1000.0
+#endif
+#ifndef V_FEEDRATE_MAX
+#define V_FEEDRATE_MAX              1000.0
+#endif
+#ifndef V_TRAVEL_MIN
+#define V_TRAVEL_MIN                0.0
+#endif
+#ifndef V_TRAVEL_MAX
+#define V_TRAVEL_MAX                0.0
+#endif
+#ifndef V_JERK_MAX
+#define V_JERK_MAX                  1000.0
+#endif
+#ifndef V_JERK_HIGH_SPEED
+#define V_JERK_HIGH_SPEED           1000.0
+#endif
+#ifndef V_HOMING_INPUT
+#define V_HOMING_INPUT              0
+#endif
+#ifndef V_HOMING_DIRECTION
+#define V_HOMING_DIRECTION          0
+#endif
+#ifndef V_SEARCH_VELOCITY
+#define V_SEARCH_VELOCITY           500.0
+#endif
+#ifndef V_LATCH_VELOCITY
+#define V_LATCH_VELOCITY            100.0
+#endif
+#ifndef V_LATCH_BACKOFF
+#define V_LATCH_BACKOFF             4.0
+#endif
+#ifndef V_ZERO_BACKOFF
+#define V_ZERO_BACKOFF              2.0
+#endif
+
+// W AXIS
+#ifndef W_AXIS_MODE
+#define W_AXIS_MODE                 AXIS_DISABLED
+#endif
+#ifndef W_VELOCITY_MAX
+#define W_VELOCITY_MAX              1000.0
+#endif
+#ifndef W_FEEDRATE_MAX
+#define W_FEEDRATE_MAX              1000.0
+#endif
+#ifndef W_TRAVEL_MAX
+#define W_TRAVEL_MAX                0.0
+#endif
+#ifndef W_TRAVEL_MIN
+#define W_TRAVEL_MIN                0.0
+#endif
+#ifndef W_JERK_MAX
+#define W_JERK_MAX                  500.0
+#endif
+#ifndef W_JERK_HIGH_SPEED
+#define W_JERK_HIGH_SPEED           500.0
+#endif
+#ifndef W_HOMING_INPUT
+#define W_HOMING_INPUT              0
+#endif
+#ifndef W_HOMING_DIRECTION
+#define W_HOMING_DIRECTION          0
+#endif
+#ifndef W_SEARCH_VELOCITY
+#define W_SEARCH_VELOCITY           250.0
+#endif
+#ifndef W_LATCH_VELOCITY
+#define W_LATCH_VELOCITY            25.0
+#endif
+#ifndef W_LATCH_BACKOFF
+#define W_LATCH_BACKOFF             4.0
+#endif
+#ifndef W_ZERO_BACKOFF
+#define W_ZERO_BACKOFF              2.0
+#endif
+
 /***************************************************************************************
  * Rotary values can be chosen to make the motor react the same as X for testing
  * To calculate the speeds here, in Wolfram Alpha-speak:
@@ -508,7 +680,7 @@
  * Note that you need floating point values to always have a .0 at the end!
 
 #define A_AXIS_MODE                 AXIS_RADIUS
-#define A_RADIUS                    (M1_TRAVEL_PER_REV/(2*3.14159628))
+#define A_RADIUS                    (M4_TRAVEL_PER_REV/(2*3.14159628))
 #define A_VELOCITY_MAX              ((X_VELOCITY_MAX/M1_TRAVEL_PER_REV)*360) // set to the same speed as X axis
 #define A_FEEDRATE_MAX              A_VELOCITY_MAX
 #define A_TRAVEL_MIN                -1.0                                     // min/max the same means infinite, no limit
@@ -579,7 +751,7 @@
 #define B_AXIS_MODE                 AXIS_DISABLED
 #endif
 #ifndef B_RADIUS
-#define B_RADIUS                    (M1_TRAVEL_PER_REV/(2*3.14159628))
+#define B_RADIUS                    (M5_TRAVEL_PER_REV/(2*3.14159628))
 #endif
 #ifndef B_VELOCITY_MAX
 #define B_VELOCITY_MAX              ((X_VELOCITY_MAX/M1_TRAVEL_PER_REV)*360)
@@ -606,10 +778,10 @@
 #define B_HOMING_DIRECTION          0
 #endif
 #ifndef B_SEARCH_VELOCITY
-#define B_SEARCH_VELOCITY           (A_VELOCITY_MAX * 0.500)
+#define B_SEARCH_VELOCITY           (B_VELOCITY_MAX * 0.500)
 #endif
 #ifndef B_LATCH_VELOCITY
-#define B_LATCH_VELOCITY            (A_VELOCITY_MAX * 0.100)
+#define B_LATCH_VELOCITY            (B_VELOCITY_MAX * 0.100)
 #endif
 #ifndef B_LATCH_BACKOFF
 #define B_LATCH_BACKOFF             5.0
@@ -623,7 +795,7 @@
 #define C_AXIS_MODE                 AXIS_DISABLED
 #endif
 #ifndef C_RADIUS
-#define C_RADIUS                    (M1_TRAVEL_PER_REV/(2*3.14159628))
+#define C_RADIUS                    (M6_TRAVEL_PER_REV/(2*3.14159628))
 #endif
 #ifndef C_VELOCITY_MAX
 #define C_VELOCITY_MAX              ((X_VELOCITY_MAX/M1_TRAVEL_PER_REV)*360)
@@ -650,10 +822,10 @@
 #define C_HOMING_DIRECTION          0
 #endif
 #ifndef C_SEARCH_VELOCITY
-#define C_SEARCH_VELOCITY           (A_VELOCITY_MAX * 0.500)
+#define C_SEARCH_VELOCITY           (C_VELOCITY_MAX * 0.500)
 #endif
 #ifndef C_LATCH_VELOCITY
-#define C_LATCH_VELOCITY            (A_VELOCITY_MAX * 0.100)
+#define C_LATCH_VELOCITY            (C_VELOCITY_MAX * 0.100)
 #endif
 #ifndef C_LATCH_BACKOFF
 #define C_LATCH_BACKOFF             5.0
@@ -909,6 +1081,60 @@
 #define P1_PWM_PHASE_OFF            0.25
 #endif
 
+// *** Heater Settings - relevant to 3dp machines *** //
+
+
+#ifndef MIN_FAN_TEMP
+#define MIN_FAN_TEMP                40.0     // Temperature that the upper-extruder fan starts
+#endif
+#ifndef MIN_FAN_VALUE
+#define MIN_FAN_VALUE               0.4      // Minimum output value (0.0-1.0) of the upper-extruder fan
+#endif
+#ifndef MAX_FAN_VALUE
+#define MAX_FAN_VALUE               1.0      // Maximum output value (0.0-1.0) of the upper-extruder fan
+#endif
+#ifndef MAX_FAN_TEMP
+#define MAX_FAN_TEMP                150.0    // Temperature at and above which the upper-extruder fan is at 1.0
+#endif
+#ifndef H1_DEFAULT_ENABLE
+#define H1_DEFAULT_ENABLE           false
+#endif
+#ifndef H1_DEFAULT_P
+#define H1_DEFAULT_P                9.0
+#endif
+#ifndef H1_DEFAULT_I
+#define H1_DEFAULT_I                0.12
+#endif
+#ifndef H1_DEFAULT_D
+#define H1_DEFAULT_D                400.0
+#endif
+
+#ifndef H2_DEFAULT_ENABLE
+#define H2_DEFAULT_ENABLE           false
+#endif
+#ifndef H2_DEFAULT_P
+#define H2_DEFAULT_P                9.0
+#endif
+#ifndef H2_DEFAULT_I
+#define H2_DEFAULT_I                0.12
+#endif
+#ifndef H2_DEFAULT_D
+#define H2_DEFAULT_D                400.0
+#endif
+
+#ifndef H3_DEFAULT_ENABLE
+#define H3_DEFAULT_ENABLE           false
+#endif
+#ifndef H3_DEFAULT_P
+#define H3_DEFAULT_P                9.0
+#endif
+#ifndef H3_DEFAULT_I
+#define H3_DEFAULT_I                0.12
+#endif
+#ifndef H3_DEFAULT_D
+#define H3_DEFAULT_D                400.0
+#endif
+
 // *** DEFAULT COORDINATE SYSTEM OFFSETS ***
 
 #ifndef G54_X_OFFSET
@@ -919,6 +1145,15 @@
 #endif
 #ifndef G54_Z_OFFSET
 #define G54_Z_OFFSET 0
+#endif
+#ifndef G54_U_OFFSET
+#define G54_U_OFFSET 0
+#endif
+#ifndef G54_V_OFFSET
+#define G54_V_OFFSET 0
+#endif
+#ifndef G54_W_OFFSET
+#define G54_W_OFFSET 0
 #endif
 #ifndef G54_A_OFFSET
 #define G54_A_OFFSET 0
@@ -939,6 +1174,15 @@
 #ifndef G55_Z_OFFSET
 #define G55_Z_OFFSET 0
 #endif
+#ifndef G55_U_OFFSET
+#define G55_U_OFFSET 0
+#endif
+#ifndef G55_V_OFFSET
+#define G55_V_OFFSET 0
+#endif
+#ifndef G55_W_OFFSET
+#define G55_W_OFFSET 0
+#endif
 #ifndef G55_A_OFFSET
 #define G55_A_OFFSET 0
 #endif
@@ -957,6 +1201,15 @@
 #endif
 #ifndef G56_Z_OFFSET
 #define G56_Z_OFFSET 0
+#endif
+#ifndef G56_U_OFFSET
+#define G56_U_OFFSET 0
+#endif
+#ifndef G56_V_OFFSET
+#define G56_V_OFFSET 0
+#endif
+#ifndef G56_W_OFFSET
+#define G56_W_OFFSET 0
 #endif
 #ifndef G56_A_OFFSET
 #define G56_A_OFFSET 0
@@ -977,6 +1230,15 @@
 #ifndef G57_Z_OFFSET
 #define G57_Z_OFFSET 0
 #endif
+#ifndef G57_U_OFFSET
+#define G57_U_OFFSET 0
+#endif
+#ifndef G57_V_OFFSET
+#define G57_V_OFFSET 0
+#endif
+#ifndef G57_W_OFFSET
+#define G57_W_OFFSET 0
+#endif
 #ifndef G57_A_OFFSET
 #define G57_A_OFFSET 0
 #endif
@@ -996,6 +1258,15 @@
 #ifndef G58_Z_OFFSET
 #define G58_Z_OFFSET 0
 #endif
+#ifndef G58_U_OFFSET
+#define G58_U_OFFSET 0
+#endif
+#ifndef G58_V_OFFSET
+#define G58_V_OFFSET 0
+#endif
+#ifndef G58_W_OFFSET
+#define G58_W_OFFSET 0
+#endif
 #ifndef G58_A_OFFSET
 #define G58_A_OFFSET 0
 #endif
@@ -1014,6 +1285,15 @@
 #endif
 #ifndef G59_Z_OFFSET
 #define G59_Z_OFFSET 0
+#endif
+#ifndef G59_U_OFFSET
+#define G59_U_OFFSET 0
+#endif
+#ifndef G59_V_OFFSET
+#define G59_V_OFFSET 0
+#endif
+#ifndef G59_W_OFFSET
+#define G59_W_OFFSET 0
 #endif
 #ifndef G59_A_OFFSET
 #define G59_A_OFFSET 0
@@ -1036,6 +1316,15 @@
 #ifndef TT1_Z_OFFSET
 #define TT1_Z_OFFSET 0
 #endif
+#ifndef TT1_U_OFFSET
+#define TT1_U_OFFSET 0
+#endif
+#ifndef TT1_V_OFFSET
+#define TT1_V_OFFSET 0
+#endif
+#ifndef TT1_W_OFFSET
+#define TT1_W_OFFSET 0
+#endif
 #ifndef TT1_A_OFFSET
 #define TT1_A_OFFSET 0
 #endif
@@ -1054,6 +1343,15 @@
 #endif
 #ifndef TT2_Z_OFFSET
 #define TT2_Z_OFFSET 0
+#endif
+#ifndef TT2_U_OFFSET
+#define TT2_U_OFFSET 0
+#endif
+#ifndef TT2_V_OFFSET
+#define TT2_V_OFFSET 0
+#endif
+#ifndef TT2_W_OFFSET
+#define TT2_W_OFFSET 0
 #endif
 #ifndef TT2_A_OFFSET
 #define TT2_A_OFFSET 0
@@ -1074,6 +1372,15 @@
 #ifndef TT3_Z_OFFSET
 #define TT3_Z_OFFSET 0
 #endif
+#ifndef TT3_U_OFFSET
+#define TT3_U_OFFSET 0
+#endif
+#ifndef TT3_V_OFFSET
+#define TT3_V_OFFSET 0
+#endif
+#ifndef TT3_W_OFFSET
+#define TT3_W_OFFSET 0
+#endif
 #ifndef TT3_A_OFFSET
 #define TT3_A_OFFSET 0
 #endif
@@ -1092,6 +1399,15 @@
 #endif
 #ifndef TT4_Z_OFFSET
 #define TT4_Z_OFFSET 0
+#endif
+#ifndef TT4_U_OFFSET
+#define TT4_U_OFFSET 0
+#endif
+#ifndef TT4_V_OFFSET
+#define TT4_V_OFFSET 0
+#endif
+#ifndef TT4_W_OFFSET
+#define TT4_W_OFFSET 0
 #endif
 #ifndef TT4_A_OFFSET
 #define TT4_A_OFFSET 0
@@ -1112,6 +1428,15 @@
 #ifndef TT5_Z_OFFSET
 #define TT5_Z_OFFSET 0
 #endif
+#ifndef TT5_U_OFFSET
+#define TT5_U_OFFSET 0
+#endif
+#ifndef TT5_V_OFFSET
+#define TT5_V_OFFSET 0
+#endif
+#ifndef TT5_W_OFFSET
+#define TT5_W_OFFSET 0
+#endif
 #ifndef TT5_A_OFFSET
 #define TT5_A_OFFSET 0
 #endif
@@ -1130,6 +1455,15 @@
 #endif
 #ifndef TT6_Z_OFFSET
 #define TT6_Z_OFFSET 0
+#endif
+#ifndef TT6_U_OFFSET
+#define TT6_U_OFFSET 0
+#endif
+#ifndef TT6_V_OFFSET
+#define TT6_V_OFFSET 0
+#endif
+#ifndef TT6_W_OFFSET
+#define TT6_W_OFFSET 0
 #endif
 #ifndef TT6_A_OFFSET
 #define TT6_A_OFFSET 0
@@ -1150,6 +1484,15 @@
 #ifndef TT7_Z_OFFSET
 #define TT7_Z_OFFSET 0
 #endif
+#ifndef TT7_U_OFFSET
+#define TT7_U_OFFSET 0
+#endif
+#ifndef TT7_V_OFFSET
+#define TT7_V_OFFSET 0
+#endif
+#ifndef TT7_W_OFFSET
+#define TT7_W_OFFSET 0
+#endif
 #ifndef TT7_A_OFFSET
 #define TT7_A_OFFSET 0
 #endif
@@ -1168,6 +1511,15 @@
 #endif
 #ifndef TT8_Z_OFFSET
 #define TT8_Z_OFFSET 0
+#endif
+#ifndef TT8_U_OFFSET
+#define TT8_U_OFFSET 0
+#endif
+#ifndef TT8_V_OFFSET
+#define TT8_V_OFFSET 0
+#endif
+#ifndef TT8_W_OFFSET
+#define TT8_W_OFFSET 0
 #endif
 #ifndef TT8_A_OFFSET
 #define TT8_A_OFFSET 0
@@ -1188,6 +1540,15 @@
 #ifndef TT9_Z_OFFSET
 #define TT9_Z_OFFSET 0
 #endif
+#ifndef TT9_U_OFFSET
+#define TT9_U_OFFSET 0
+#endif
+#ifndef TT9_V_OFFSET
+#define TT9_V_OFFSET 0
+#endif
+#ifndef TT9_W_OFFSET
+#define TT9_W_OFFSET 0
+#endif
 #ifndef TT9_A_OFFSET
 #define TT9_A_OFFSET 0
 #endif
@@ -1206,6 +1567,15 @@
 #endif
 #ifndef TT10_Z_OFFSET
 #define TT10_Z_OFFSET 0
+#endif
+#ifndef TT10_U_OFFSET
+#define TT10_U_OFFSET 0
+#endif
+#ifndef TT10_V_OFFSET
+#define TT10_V_OFFSET 0
+#endif
+#ifndef TT10_W_OFFSET
+#define TT10_W_OFFSET 0
 #endif
 #ifndef TT10_A_OFFSET
 #define TT10_A_OFFSET 0
@@ -1226,6 +1596,15 @@
 #ifndef TT11_Z_OFFSET
 #define TT11_Z_OFFSET 0
 #endif
+#ifndef TT11_U_OFFSET
+#define TT11_U_OFFSET 0
+#endif
+#ifndef TT11_V_OFFSET
+#define TT11_V_OFFSET 0
+#endif
+#ifndef TT11_W_OFFSET
+#define TT11_W_OFFSET 0
+#endif
 #ifndef TT11_A_OFFSET
 #define TT11_A_OFFSET 0
 #endif
@@ -1244,6 +1623,15 @@
 #endif
 #ifndef TT12_Z_OFFSET
 #define TT12_Z_OFFSET 0
+#endif
+#ifndef TT12_U_OFFSET
+#define TT12_U_OFFSET 0
+#endif
+#ifndef TT12_V_OFFSET
+#define TT12_V_OFFSET 0
+#endif
+#ifndef TT12_W_OFFSET
+#define TT12_W_OFFSET 0
 #endif
 #ifndef TT12_A_OFFSET
 #define TT12_A_OFFSET 0
@@ -1264,6 +1652,15 @@
 #ifndef TT13_Z_OFFSET
 #define TT13_Z_OFFSET 0
 #endif
+#ifndef TT13_U_OFFSET
+#define TT13_U_OFFSET 0
+#endif
+#ifndef TT13_V_OFFSET
+#define TT13_V_OFFSET 0
+#endif
+#ifndef TT13_W_OFFSET
+#define TT13_W_OFFSET 0
+#endif
 #ifndef TT13_A_OFFSET
 #define TT13_A_OFFSET 0
 #endif
@@ -1282,6 +1679,15 @@
 #endif
 #ifndef TT14_Z_OFFSET
 #define TT14_Z_OFFSET 0
+#endif
+#ifndef TT14_U_OFFSET
+#define TT14_U_OFFSET 0
+#endif
+#ifndef TT14_V_OFFSET
+#define TT14_V_OFFSET 0
+#endif
+#ifndef TT14_W_OFFSET
+#define TT14_W_OFFSET 0
 #endif
 #ifndef TT14_A_OFFSET
 #define TT14_A_OFFSET 0
@@ -1302,6 +1708,15 @@
 #ifndef TT15_Z_OFFSET
 #define TT15_Z_OFFSET 0
 #endif
+#ifndef TT15_U_OFFSET
+#define TT15_U_OFFSET 0
+#endif
+#ifndef TT15_V_OFFSET
+#define TT15_V_OFFSET 0
+#endif
+#ifndef TT15_W_OFFSET
+#define TT15_W_OFFSET 0
+#endif
 #ifndef TT15_A_OFFSET
 #define TT15_A_OFFSET 0
 #endif
@@ -1320,6 +1735,15 @@
 #endif
 #ifndef TT16_Z_OFFSET
 #define TT16_Z_OFFSET 0
+#endif
+#ifndef TT16_U_OFFSET
+#define TT16_U_OFFSET 0
+#endif
+#ifndef TT16_V_OFFSET
+#define TT16_V_OFFSET 0
+#endif
+#ifndef TT16_W_OFFSET
+#define TT16_W_OFFSET 0
 #endif
 #ifndef TT16_A_OFFSET
 #define TT16_A_OFFSET 0
@@ -1340,6 +1764,15 @@
 #ifndef TT17_Z_OFFSET
 #define TT17_Z_OFFSET 0
 #endif
+#ifndef TT17_U_OFFSET
+#define TT17_U_OFFSET 0
+#endif
+#ifndef TT17_V_OFFSET
+#define TT17_V_OFFSET 0
+#endif
+#ifndef TT17_W_OFFSET
+#define TT17_W_OFFSET 0
+#endif
 #ifndef TT17_A_OFFSET
 #define TT17_A_OFFSET 0
 #endif
@@ -1358,6 +1791,15 @@
 #endif
 #ifndef TT18_Z_OFFSET
 #define TT18_Z_OFFSET 0
+#endif
+#ifndef TT18_U_OFFSET
+#define TT18_U_OFFSET 0
+#endif
+#ifndef TT18_V_OFFSET
+#define TT18_V_OFFSET 0
+#endif
+#ifndef TT18_W_OFFSET
+#define TT18_W_OFFSET 0
 #endif
 #ifndef TT18_A_OFFSET
 #define TT18_A_OFFSET 0
@@ -1378,6 +1820,15 @@
 #ifndef TT19_Z_OFFSET
 #define TT19_Z_OFFSET 0
 #endif
+#ifndef TT19_U_OFFSET
+#define TT19_U_OFFSET 0
+#endif
+#ifndef TT19_V_OFFSET
+#define TT19_V_OFFSET 0
+#endif
+#ifndef TT19_W_OFFSET
+#define TT19_W_OFFSET 0
+#endif
 #ifndef TT19_A_OFFSET
 #define TT19_A_OFFSET 0
 #endif
@@ -1396,6 +1847,15 @@
 #endif
 #ifndef TT20_Z_OFFSET
 #define TT20_Z_OFFSET 0
+#endif
+#ifndef TT20_U_OFFSET
+#define TT20_U_OFFSET 0
+#endif
+#ifndef TT20_V_OFFSET
+#define TT20_V_OFFSET 0
+#endif
+#ifndef TT20_W_OFFSET
+#define TT20_W_OFFSET 0
 #endif
 #ifndef TT20_A_OFFSET
 #define TT20_A_OFFSET 0
@@ -1416,6 +1876,15 @@
 #ifndef TT21_Z_OFFSET
 #define TT21_Z_OFFSET 0
 #endif
+#ifndef TT21_U_OFFSET
+#define TT21_U_OFFSET 0
+#endif
+#ifndef TT21_V_OFFSET
+#define TT21_V_OFFSET 0
+#endif
+#ifndef TT21_W_OFFSET
+#define TT21_W_OFFSET 0
+#endif
 #ifndef TT21_A_OFFSET
 #define TT21_A_OFFSET 0
 #endif
@@ -1434,6 +1903,15 @@
 #endif
 #ifndef TT22_Z_OFFSET
 #define TT22_Z_OFFSET 0
+#endif
+#ifndef TT22_U_OFFSET
+#define TT22_U_OFFSET 0
+#endif
+#ifndef TT22_V_OFFSET
+#define TT22_V_OFFSET 0
+#endif
+#ifndef TT22_W_OFFSET
+#define TT22_W_OFFSET 0
 #endif
 #ifndef TT22_A_OFFSET
 #define TT22_A_OFFSET 0
@@ -1454,6 +1932,15 @@
 #ifndef TT23_Z_OFFSET
 #define TT23_Z_OFFSET 0
 #endif
+#ifndef TT23_U_OFFSET
+#define TT23_U_OFFSET 0
+#endif
+#ifndef TT23_V_OFFSET
+#define TT23_V_OFFSET 0
+#endif
+#ifndef TT23_W_OFFSET
+#define TT23_W_OFFSET 0
+#endif
 #ifndef TT23_A_OFFSET
 #define TT23_A_OFFSET 0
 #endif
@@ -1472,6 +1959,15 @@
 #endif
 #ifndef TT24_Z_OFFSET
 #define TT24_Z_OFFSET 0
+#endif
+#ifndef TT24_U_OFFSET
+#define TT24_U_OFFSET 0
+#endif
+#ifndef TT24_V_OFFSET
+#define TT24_V_OFFSET 0
+#endif
+#ifndef TT24_W_OFFSET
+#define TT24_W_OFFSET 0
 #endif
 #ifndef TT24_A_OFFSET
 #define TT24_A_OFFSET 0
@@ -1492,6 +1988,15 @@
 #ifndef TT25_Z_OFFSET
 #define TT25_Z_OFFSET 0
 #endif
+#ifndef TT25_U_OFFSET
+#define TT25_U_OFFSET 0
+#endif
+#ifndef TT25_V_OFFSET
+#define TT25_V_OFFSET 0
+#endif
+#ifndef TT25_W_OFFSET
+#define TT25_W_OFFSET 0
+#endif
 #ifndef TT25_A_OFFSET
 #define TT25_A_OFFSET 0
 #endif
@@ -1510,6 +2015,15 @@
 #endif
 #ifndef TT26_Z_OFFSET
 #define TT26_Z_OFFSET 0
+#endif
+#ifndef TT26_U_OFFSET
+#define TT26_U_OFFSET 0
+#endif
+#ifndef TT26_V_OFFSET
+#define TT26_V_OFFSET 0
+#endif
+#ifndef TT26_W_OFFSET
+#define TT26_W_OFFSET 0
 #endif
 #ifndef TT26_A_OFFSET
 #define TT26_A_OFFSET 0
@@ -1530,6 +2044,15 @@
 #ifndef TT27_Z_OFFSET
 #define TT27_Z_OFFSET 0
 #endif
+#ifndef TT27_U_OFFSET
+#define TT27_U_OFFSET 0
+#endif
+#ifndef TT27_V_OFFSET
+#define TT27_V_OFFSET 0
+#endif
+#ifndef TT27_W_OFFSET
+#define TT27_W_OFFSET 0
+#endif
 #ifndef TT27_A_OFFSET
 #define TT27_A_OFFSET 0
 #endif
@@ -1548,6 +2071,15 @@
 #endif
 #ifndef TT28_Z_OFFSET
 #define TT28_Z_OFFSET 0
+#endif
+#ifndef TT28_U_OFFSET
+#define TT28_U_OFFSET 0
+#endif
+#ifndef TT28_V_OFFSET
+#define TT28_V_OFFSET 0
+#endif
+#ifndef TT28_W_OFFSET
+#define TT28_W_OFFSET 0
 #endif
 #ifndef TT28_A_OFFSET
 #define TT28_A_OFFSET 0
@@ -1568,6 +2100,15 @@
 #ifndef TT29_Z_OFFSET
 #define TT29_Z_OFFSET 0
 #endif
+#ifndef TT29_U_OFFSET
+#define TT29_U_OFFSET 0
+#endif
+#ifndef TT29_V_OFFSET
+#define TT29_V_OFFSET 0
+#endif
+#ifndef TT29_W_OFFSET
+#define TT29_W_OFFSET 0
+#endif
 #ifndef TT29_A_OFFSET
 #define TT29_A_OFFSET 0
 #endif
@@ -1586,6 +2127,15 @@
 #endif
 #ifndef TT30_Z_OFFSET
 #define TT30_Z_OFFSET 0
+#endif
+#ifndef TT30_U_OFFSET
+#define TT30_U_OFFSET 0
+#endif
+#ifndef TT30_V_OFFSET
+#define TT30_V_OFFSET 0
+#endif
+#ifndef TT30_W_OFFSET
+#define TT30_W_OFFSET 0
 #endif
 #ifndef TT30_A_OFFSET
 #define TT30_A_OFFSET 0
@@ -1606,6 +2156,15 @@
 #ifndef TT31_Z_OFFSET
 #define TT31_Z_OFFSET 0
 #endif
+#ifndef TT31_U_OFFSET
+#define TT31_U_OFFSET 0
+#endif
+#ifndef TT31_V_OFFSET
+#define TT31_V_OFFSET 0
+#endif
+#ifndef TT31_W_OFFSET
+#define TT31_W_OFFSET 0
+#endif
 #ifndef TT31_A_OFFSET
 #define TT31_A_OFFSET 0
 #endif
@@ -1624,6 +2183,15 @@
 #endif
 #ifndef TT32_Z_OFFSET
 #define TT32_Z_OFFSET 0
+#endif
+#ifndef TT32_U_OFFSET
+#define TT32_U_OFFSET 0
+#endif
+#ifndef TT32_V_OFFSET
+#define TT32_V_OFFSET 0
+#endif
+#ifndef TT32_W_OFFSET
+#define TT32_W_OFFSET 0
 #endif
 #ifndef TT32_A_OFFSET
 #define TT32_A_OFFSET 0
