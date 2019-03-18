@@ -224,7 +224,7 @@
 
 // MOTOR 1
 #ifndef M1_MOTOR_MAP
-#define M1_MOTOR_MAP                AXIS_A                  // {1ma: AXIS_X, AXIS_Y...
+#define M1_MOTOR_MAP                AXIS_A_EXTERNAL         // {1ma: AXIS_X_EXTERNAL, AXIS_Y...
 #endif
 #ifndef M1_STEP_ANGLE
 #define M1_STEP_ANGLE               1.8                     // {1sa: degrees per step
@@ -256,7 +256,7 @@
 
 // MOTOR 2
 #ifndef M2_MOTOR_MAP
-#define M2_MOTOR_MAP                AXIS_B
+#define M2_MOTOR_MAP                AXIS_B_EXTERNAL
 #endif
 #ifndef M2_STEP_ANGLE
 #define M2_STEP_ANGLE               1.8
@@ -288,7 +288,7 @@
 
 // MOTOR 3
 #ifndef M3_MOTOR_MAP
-#define M3_MOTOR_MAP                AXIS_Z
+#define M3_MOTOR_MAP                AXIS_Z_EXTERNAL
 #endif
 #ifndef M3_STEP_ANGLE
 #define M3_STEP_ANGLE               1.8
@@ -320,7 +320,7 @@
 
 // MOTOR 4
 #ifndef M4_MOTOR_MAP
-#define M4_MOTOR_MAP                AXIS_X
+#define M4_MOTOR_MAP                AXIS_X_EXTERNAL
 #endif
 #ifndef M4_STEP_ANGLE
 #define M4_STEP_ANGLE               1.8
@@ -352,7 +352,7 @@
 
 // MOTOR 5
 #ifndef M5_MOTOR_MAP
-#define M5_MOTOR_MAP                AXIS_Y
+#define M5_MOTOR_MAP                AXIS_Y_EXTERNAL
 #endif
 #ifndef M5_STEP_ANGLE
 #define M5_STEP_ANGLE               1.8
@@ -384,7 +384,7 @@
 
 // MOTOR 6
 #ifndef M6_MOTOR_MAP
-#define M6_MOTOR_MAP                AXIS_C
+#define M6_MOTOR_MAP                AXIS_C_EXTERNAL
 #endif
 #ifndef M6_STEP_ANGLE
 #define M6_STEP_ANGLE               1.8
@@ -705,15 +705,12 @@
 #endif
 #ifndef A_VELOCITY_MAX
 // In degrees/min. The Newmark RM-3-110 is rated at 30 degrees/sec * 60 sec/min,
-// i.e, 1800 degrees/min, but with the bigger stepper that I use, it will go up
-// to 4600 before the motor starts to sound bad.  To give some headroom, I set
-// VM to 3600, which results in 10 RPM at the table, or 6 seconds per rev.
-#define A_VELOCITY_MAX               3600  // 3600 degrees/min = 10 RPM
+// i.e, 1800 degrees/min. It will go faster with nothing attached to the rotor,
+// but with a fixture mounted, it stalls if you go much faster than 1800.
+#define A_VELOCITY_MAX               1800  // 1800 degrees/min = 5 RPM
 #endif
 #ifndef A_FEEDRATE_MAX
-// Set max feedrate higher; you can control the actual rate with F words
-// in the G1 commands.  VELOCITY_MAX is for G0, not under program control.
-#define A_FEEDRATE_MAX               4400
+#define A_FEEDRATE_MAX               A_VELOCITY_MAX
 #endif
 #ifndef A_TRAVEL_MIN
 #define A_TRAVEL_MIN                    0    // min/max the same means infinite, no limit
@@ -748,25 +745,25 @@
 
 // B AXIS
 #ifndef B_AXIS_MODE
-#define B_AXIS_MODE                 AXIS_DISABLED
+#define B_AXIS_MODE                 AXIS_STANDARD
 #endif
 #ifndef B_RADIUS
-#define B_RADIUS                    (M5_TRAVEL_PER_REV/(2*3.14159628))
+#define B_RADIUS                    (M2_TRAVEL_PER_REV/(2*3.14159628))
 #endif
 #ifndef B_VELOCITY_MAX
-#define B_VELOCITY_MAX              ((X_VELOCITY_MAX/M1_TRAVEL_PER_REV)*360)
+#define B_VELOCITY_MAX              1800
 #endif
 #ifndef B_FEEDRATE_MAX
 #define B_FEEDRATE_MAX              B_VELOCITY_MAX
 #endif
 #ifndef B_TRAVEL_MIN
-#define B_TRAVEL_MIN                -1.0
+#define B_TRAVEL_MIN                0
 #endif
 #ifndef B_TRAVEL_MAX
-#define B_TRAVEL_MAX                -1.0
+#define B_TRAVEL_MAX                360
 #endif
 #ifndef B_JERK_MAX
-#define B_JERK_MAX                  (X_JERK_MAX*(360/M1_TRAVEL_PER_REV))
+#define B_JERK_MAX                  500.0
 #endif
 #ifndef B_JERK_HIGH_SPEED
 #define B_JERK_HIGH_SPEED           B_JERK_MAX
@@ -784,10 +781,10 @@
 #define B_LATCH_VELOCITY            (B_VELOCITY_MAX * 0.100)
 #endif
 #ifndef B_LATCH_BACKOFF
-#define B_LATCH_BACKOFF             5.0
+#define B_LATCH_BACKOFF             10.0
 #endif
 #ifndef B_ZERO_BACKOFF
-#define B_ZERO_BACKOFF              2.0
+#define B_ZERO_BACKOFF              0.0
 #endif
 
 // C AXIS
